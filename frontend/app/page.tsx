@@ -14,7 +14,7 @@ export default function Home() {
   const [audioPath, setAudioPath] = useState("");
   const [images, setImages] = useState<string[]>([]);
 
-  const canGenerateVideo = audioPath && images.length > 0;
+  const canGenerateVideo = !!audioPath && images.length > 0;
 
   return (
     <main style={{ maxWidth: 800, margin: "auto", padding: "2rem" }}>
@@ -27,17 +27,8 @@ export default function Home() {
 
       <section>
         <h2>2. Tema del video</h2>
-        <input
-          placeholder="Ej: Explicar cómo funciona la IA"
-          value={topic}
-          onChange={(e) => setTopic(e.target.value)}
-          style={{ width: "100%", padding: "0.5rem" }}
-        />
-      </section>
-
-      <section>
-        <h2>3. Guion</h2>
-        <ScriptGenerator script={script} setScript={setScript} />
+        {/* ScriptGenerator ahora es controlado por topic/script en la página */}
+        <ScriptGenerator topic={topic} setTopic={setTopic} script={script} setScript={setScript} />
       </section>
 
       {script && (
@@ -52,6 +43,7 @@ export default function Home() {
         <section>
           <h2>5. Imágenes</h2>
           <ImageGenerator
+            avatar={avatar}
             topic={topic}
             script={script}
             onGenerated={setImages}
@@ -63,7 +55,7 @@ export default function Home() {
       {canGenerateVideo && (
         <section>
           <h2>6. Video final</h2>
-          <VideoGenerator audioPath={audioPath} images={images} />
+          <VideoGenerator audioPath={audioPath} images={images} avatar={avatar} />
         </section>
       )}
     </main>

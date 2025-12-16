@@ -1,6 +1,10 @@
+"use client";
+import React, { useState } from "react";
+import { generateAudio } from "../services/api";
+
 type Props = {
   script: string;
-  onGenerated: (audioPath: string) => void; // Aquí agregamos onGenerated
+  onGenerated: (audioPath: string) => void;
 };
 
 export default function AudioGenerator({ script, onGenerated }: Props) {
@@ -10,10 +14,15 @@ export default function AudioGenerator({ script, onGenerated }: Props) {
 
   async function handleGenerate() {
     setLoading(true);
-    const data = await generateAudio(script, voice);
-    setAudioPath(data.audio_path);
-    onGenerated(data.audio_path); // Notificamos al padre
-    setLoading(false);
+    try {
+      const data = await generateAudio(script, voice);
+      setAudioPath(data.audioPath);
+      onGenerated(data.audioPath);
+    } catch (err: any) {
+      alert("Error generando audio: " + (err?.message || ""));
+    } finally {
+      setLoading(false);
+    }
   }
 
   return (
@@ -28,13 +37,15 @@ export default function AudioGenerator({ script, onGenerated }: Props) {
 
       <br />
 
-      <button onClick={handleGenerate} disabled={loading}>
+      <button onClick={handleGenerate} disabled={loading || !script}>
         Generar audio
       </button>
 
       {loading && <p>Generando audio...</p>}
 
-      {audioPath && <audio controls src={`http://localhost:8000/${audioPath}`} />}
+      {audioPath && (
+        <audio controls src={`http://localhost:8000/${audioPath}`} />
+      )}
     </div>
   );
 }
